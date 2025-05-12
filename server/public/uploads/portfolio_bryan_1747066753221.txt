@@ -1,0 +1,4 @@
+Programé el portfolio de una manera donde no se podía ver si no ejecutabas ciertos comandos, y estuve intentando hostearlo en una pagina web para que lo puedas ver pero
+me ha dado muchos errores y le he estado preguntando a los profes y al final he conseguido subirlo:
+
+Este es el enlace: https://bryanjr.netlify.app/
