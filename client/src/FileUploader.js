@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
+import "./css/FileUploader.css";
 
 const socket = io("http://localhost:3001");
 
@@ -36,16 +37,16 @@ function FileUploader() {
   }, []);
 
   const handleUpload = async () => {
-    if (!file) return alert("Selecciona un fitxer primer!");
+    if (!file) return alert("¡Selecciona un archivo primero!");
     const formData = new FormData();
     formData.append("file", file);
     try {
       await axios.post("http://localhost:3001/documents/upload", formData);
-      alert("Fitxer pujat correctament!");
+      alert("¡Archivo subido correctamente!");
       setFile(null);
       fetchFiles();
     } catch (err) {
-      alert("Error al pujar: " + err.response.data.error);
+      alert("Error al subir: " + err.response.data.error);
     }
   };
 
@@ -56,7 +57,7 @@ function FileUploader() {
       setFileContent(res.data.content);
       setLastModified(new Date());
     } catch (err) {
-      alert("No s'ha pogut llegir l'arxiu.");
+      alert("No se pudo leer el archivo.");
     }
   };
 
@@ -67,7 +68,6 @@ function FileUploader() {
     socket.emit("edit_document", newContent);
   };
 
-  // Autosave cada 5 segundos si hay archivo seleccionado
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedFile) {
@@ -86,7 +86,7 @@ function FileUploader() {
 
   const formatTime = (date) => {
     if (!date) return "";
-    return date.toLocaleTimeString("ca-ES", {
+    return date.toLocaleTimeString("es-ES", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -94,64 +94,57 @@ function FileUploader() {
   };
 
   return (
-    <div>
-      <h2>Pujar Fitxer</h2>
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <button onClick={handleUpload}>Pujar</button>
+    <div className="file-uploader-container">
+      <div className="file-uploader-controls">
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="file-input"
+        />
+        <button onClick={handleUpload} className="upload-button">
+          Subir
+        </button>
+      </div>
 
-      <h3>Fitxers disponibles:</h3>
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {files.map((filename, index) => (
-          <li
-            key={index}
-            style={{
-              marginBottom: "0.5rem",
-              background: "#1e1f2f",
-              padding: "0.5rem",
-              borderRadius: "5px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <span style={{ color: "#66ccff" }}>📄 {filename}</span>
-            <div>
-              <a
-                href={`http://localhost:3001/documents/download/${filename}`}
-                download={filename}
-                style={{
-                  marginRight: "10px",
-                  color: "#ffffff",
-                  backgroundColor: "#444",
-                  padding: "4px 8px",
-                  borderRadius: "5px",
-                  textDecoration: "none",
-                }}
-              >
-                Descarregar
-              </a>
-              <button onClick={() => handleOpen(filename)}>Obrir</button>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      {selectedFile && (
-        <div style={{ marginTop: "20px" }}>
-          <h4>
-            Editant: {selectedFile}
-            <span style={{ marginLeft: "20px", fontSize: "0.9em", color: "#aaa" }}>
-              Últim canvi: {formatTime(lastModified)}
-            </span>
-          </h4>
-          <textarea
-            value={fileContent}
-            onChange={handleContentChange}
-            rows={12}
-            cols={70}
-          />
+      <div className="file-list-and-editor">
+        <div className="file-list-container">
+          <h3>Archivos disponibles:</h3>
+          <ul className="file-list">
+            {files.map((filename, index) => (
+              <li key={index} className="file-item">
+                <span>📄 {filename}</span>
+                <div className="file-actions">
+                  <a
+                    href={`http://localhost:3001/documents/download/${filename}`}
+                    download={filename}
+                    className="download-button"
+                  >
+                    Descargar
+                  </a>
+                  <button onClick={() => handleOpen(filename)} className="open-button">
+                    Abrir
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
+
+        {selectedFile && (
+          <div className="editor-container">
+            <div className="editing-info">
+              <span>
+                Editando: {selectedFile} | Último cambio: {formatTime(lastModified)}
+              </span>
+            </div>
+            <textarea
+              value={fileContent}
+              onChange={handleContentChange}
+              className="editor-textarea"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

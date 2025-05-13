@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import './css/ChatRoom.css';
+
 const socket = io('http://localhost:3001');
 
 function ChatRoom({ user }) {
@@ -10,22 +12,52 @@ function ChatRoom({ user }) {
     socket.on('receive_message', data => {
       setMessages(prev => [...prev, data]);
     });
+
+    // Limpieza al desmontar el componente
+    return () => {
+      socket.off('receive_message');
+    };
   }, []);
 
-  const sendMessage = () => {
+  const sendMessage = e => {
+    // Evitar que el formulario recargue la página si se usa Enter
+    if (e) e.preventDefault();
+
     if (message.trim()) {
       socket.emit('send_message', { user, text: message });
       setMessage('');
     }
   };
 
-  return (<div>
-    <h2>Xat en temps real</h2>
-    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#555', padding: '1rem', marginBottom: '1rem' }}>
-      {messages.map((msg, i) => <div key={i}><b>{msg.user}:</b> {msg.text}</div>)}
+  const handleKeyPress = e => {
+    // Enviar mensaje solo si se presiona Enter (sin Shift u otras teclas)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      sendMessage(e);
+    }
+  };
+
+  return (
+    <div className="chat-container">
+      <div className="chat-messages">
+        {messages.map((msg, i) => (
+          <div key={i} className={`message ${msg.user === user ? 'message-sent' : 'message-received'}`}>
+            <b>{msg.user}:</b>
+            <span>{msg.text}</span>
+          </div>
+        ))}
+      </div>
+      <div className="chat-input">
+        <input
+          type="text"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Escriu un missatge..."
+        />
+        <button onClick={sendMessage}>Enviar</button>
+      </div>
     </div>
-    <input value={message} onChange={e => setMessage(e.target.value)} placeholder="Escriu un missatge" />
-    <button onClick={sendMessage}>Enviar</button>
-  </div>);
+  );
 }
+
 export default ChatRoom;
