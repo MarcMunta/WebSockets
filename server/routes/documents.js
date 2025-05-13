@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 
+
+
 // Crear carpeta si no existe
 const uploadDir = "./public/uploads/";
 if (!fs.existsSync(uploadDir)) {
@@ -36,9 +38,14 @@ const upload = multer({
 router.post("/upload", (req, res) => {
   upload.single("file")(req, res, (err) => {
     if (err) return res.status(400).json({ error: err.message });
+
+    // 🔔 Emitimos evento de socket a todos los usuarios conectados
+    io.emit("new_file_uploaded", req.file.filename);
+
     res.json({ filename: req.file.filename });
   });
 });
+
 
 // Listar archivos
 router.get("/list", (req, res) => {

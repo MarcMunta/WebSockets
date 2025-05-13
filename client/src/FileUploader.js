@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3001");
 
 function FileUploader() {
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileContent, setFileContent] = useState("");
+  const [lastModified, setLastModified] = useState(null);
 
   const fetchFiles = async () => {
     try {
@@ -18,6 +22,17 @@ function FileUploader() {
 
   useEffect(() => {
     fetchFiles();
+  }, []);
+
+  useEffect(() => {
+    socket.on("document_update", (updatedContent) => {
+      setFileContent(updatedContent);
+      setLastModified(new Date());
+    });
+
+    return () => {
+      socket.off("document_update");
+    };
   }, []);
 
   const handleUpload = async () => {
@@ -36,25 +51,46 @@ function FileUploader() {
 
   const handleOpen = async (filename) => {
     try {
-      const res = await axios.get(
-        `http://localhost:3001/documents/read/${filename}`
-      );
+      const res = await axios.get(`http://localhost:3001/documents/read/${filename}`);
       setSelectedFile(filename);
       setFileContent(res.data.content);
+      setLastModified(new Date());
     } catch (err) {
       alert("No s'ha pogut llegir l'arxiu.");
     }
   };
 
-  const handleSave = async () => {
-    try {
-      await axios.post(`http://localhost:3001/documents/save/${selectedFile}`, {
-        content: fileContent,
-      });
-      alert("Fitxer desat correctament!");
-    } catch (err) {
-      alert("Error en desar l'arxiu.");
-    }
+  const handleContentChange = (e) => {
+    const newContent = e.target.value;
+    setFileContent(newContent);
+    setLastModified(new Date());
+    socket.emit("edit_document", newContent);
+  };
+
+  // Autosave cada 5 segundos si hay archivo seleccionado
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (selectedFile) {
+        axios
+          .post(`http://localhost:3001/documents/save/${selectedFile}`, {
+            content: fileContent,
+          })
+          .catch((err) => {
+            console.error("Error en autosave:", err);
+          });
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [selectedFile, fileContent]);
+
+  const formatTime = (date) => {
+    if (!date) return "";
+    return date.toLocaleTimeString("ca-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
   };
 
   return (
@@ -102,17 +138,18 @@ function FileUploader() {
 
       {selectedFile && (
         <div style={{ marginTop: "20px" }}>
-          <h4>Editant: {selectedFile}</h4>
+          <h4>
+            Editant: {selectedFile}
+            <span style={{ marginLeft: "20px", fontSize: "0.9em", color: "#aaa" }}>
+              Últim canvi: {formatTime(lastModified)}
+            </span>
+          </h4>
           <textarea
             value={fileContent}
-            onChange={(e) => setFileContent(e.target.value)}
+            onChange={handleContentChange}
             rows={12}
             cols={70}
           />
-          <br />
-          <button onClick={handleSave} style={{ marginTop: "10px" }}>
-            Guardar canvis
-          </button>
         </div>
       )}
     </div>
