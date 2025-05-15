@@ -41,7 +41,11 @@ function ChatRoom({ user }) {
   const sendMessage = (e) => {
     if (e) e.preventDefault();
     if (message.trim()) {
-      socket.emit("send_message", { user, text: message });
+      socket.emit("send_message", {
+        user,
+        text: message,
+        timestamp: new Date().toISOString(),
+      });
       setMessage("");
     }
   };
@@ -104,8 +108,13 @@ function ChatRoom({ user }) {
               msg.user === user ? "message-sent" : "message-received"
             }`}
           >
-            <b>{msg.user}:</b>
-            <span>{msg.text}</span>
+            <b>{msg.user}</b>
+            <span className="message-text">{msg.text}</span>
+            <span className="timestamp">
+              {msg.timestamp
+                ? new Date(msg.timestamp).toLocaleTimeString("es-ES")
+                : ""}
+            </span>
           </div>
         ))}
         <div ref={bottomRef} />

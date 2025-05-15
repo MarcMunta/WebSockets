@@ -1,54 +1,22 @@
 [
   {
-    "user": "Sistema",
-    "text": "Benvingut al xat!"
+    "user": "Ana",
+    "text": "asfsfas",
+    "timestamp": "2025-05-15T16:12:47.351Z"
   },
   {
     "user": "Ana",
-    "text": "asdasdasdasd"
+    "text": "gag",
+    "timestamp": "2025-05-15T16:12:51.975Z"
   },
   {
     "user": "Ana",
-    "text": "asdsdasass"
+    "text": "asdagfgf",
+    "timestamp": "2025-05-15T16:19:36.616Z"
   },
   {
     "user": "Ana",
-    "text": "asdasasdas"
-  },
-  {
-    "user": "Ana",
-    "text": "adssadasdasa"
-  },
-  {
-    "user": "Ana",
-    "text": "asdsadasasg"
-  },
-  {
-    "user": "Ana",
-    "text": "HOLAAA"
-  },
-  {
-    "user": "Ana",
-    "text": "holaa"
-  },
-  {
-    "user": "Ana",
-    "text": "gra"
-  },
-  {
-    "user": "Ana",
-    "text": "asdasd"
-  },
-  {
-    "user": "Ana",
-    "text": "asdsadsadas"
-  },
-  {
-    "user": "Profesor",
-    "text": "HOLaaaa"
-  },
-  {
-    "user": "Ana",
-    "text": "ASDADADASAS"
+    "text": "HOLAAA",
+    "timestamp": "2025-05-15T16:19:38.287Z"
   }
 ]

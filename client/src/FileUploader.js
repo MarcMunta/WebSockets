@@ -23,6 +23,14 @@ function FileUploader() {
 
   useEffect(() => {
     fetchFiles();
+
+    socket.on("new_file_uploaded", () => {
+      fetchFiles();
+    });
+
+    return () => {
+      socket.off("new_file_uploaded");
+    };
   }, []);
 
   useEffect(() => {
@@ -44,15 +52,16 @@ function FileUploader() {
       await axios.post("http://localhost:3001/documents/upload", formData);
       alert("¡Archivo subido correctamente!");
       setFile(null);
-      fetchFiles();
     } catch (err) {
-      alert("Error al subir: " + err.response.data.error);
+      alert("Error al subir: " + (err.response?.data?.error || err.message));
     }
   };
 
   const handleOpen = async (filename) => {
     try {
-      const res = await axios.get(`http://localhost:3001/documents/read/${filename}`);
+      const res = await axios.get(
+        `http://localhost:3001/documents/read/${filename}`
+      );
       setSelectedFile(filename);
       setFileContent(res.data.content);
       setLastModified(new Date());
@@ -104,6 +113,9 @@ function FileUploader() {
         <button onClick={handleUpload} className="upload-button">
           Subir
         </button>
+        <button onClick={fetchFiles} className="reload-button">
+          Recargar archivos
+        </button>
       </div>
 
       <div className="file-list-and-editor">
@@ -121,7 +133,10 @@ function FileUploader() {
                   >
                     Descargar
                   </a>
-                  <button onClick={() => handleOpen(filename)} className="open-button">
+                  <button
+                    onClick={() => handleOpen(filename)}
+                    className="open-button"
+                  >
                     Abrir
                   </button>
                 </div>
@@ -134,7 +149,8 @@ function FileUploader() {
           <div className="editor-container">
             <div className="editing-info">
               <span>
-                Editando: {selectedFile} | Último cambio: {formatTime(lastModified)}
+                Editando: {selectedFile} | Último cambio:{" "}
+                {formatTime(lastModified)}
               </span>
             </div>
             <textarea
