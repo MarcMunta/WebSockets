@@ -18,5 +18,15 @@
     "user": "Ana",
     "text": "HOLAAA",
     "timestamp": "2025-05-15T16:19:38.287Z"
+  },
+  {
+    "user": "Ana",
+    "text": "Hola buenas tardes",
+    "timestamp": "2025-05-15T16:25:18.367Z"
+  },
+  {
+    "user": "Profesor",
+    "text": "hola",
+    "timestamp": "2025-05-15T16:25:22.687Z"
   }
 ]
