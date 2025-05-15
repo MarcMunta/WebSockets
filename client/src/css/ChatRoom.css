@@ -96,3 +96,24 @@
   outline: none;
   box-shadow: 0 0 8px rgba(94, 63, 141, 0.5);
 }
+
+.export-button {
+  margin: 5px;
+  padding: 8px 16px;
+  background-color: #5e3f8d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.export-button:hover {
+  background-color: #47268b;
+}
+
+.chat-export {
+  margin-top: 15px;
+  text-align: center;
+}

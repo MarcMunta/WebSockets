@@ -1,0 +1,22 @@
+<?php
+// Obtener información de la instancia EC2 (opcional, requiere el AWS SDK o metadatos)
+$instance_id = file_get_contents('http://169.254.169.254/latest/meta-data/instance-id');
+$hostname = gethostname(); // Nombre del host de la instancia
+$ip_address = $_SERVER['SERVER_ADDR']; // IP del servidor
+$request_time = date('Y-m-d H:i:s'); // Hora de la solicitud
+
+// Mostrar información para verificar el balanceo
+echo "<h1>Prueba de Elastic Load Balancer</h1>";
+echo "<p><strong>Instance ID:</strong> " . htmlspecialchars($instance_id) . "</p>";
+echo "<p><strong>Hostname:</strong> " . htmlspecialchars($hostname) . "</p>";
+echo "<p><strong>IP Address:</strong> " . htmlspecialchars($ip_address) . "</p>";
+echo "<p><strong>Request Time:</strong> " . htmlspecialchars($request_time) . "</p>";
+echo "<p><strong>User Agent:</strong> " . htmlspecialchars($_SERVER['HTTP_USER_AGENT']) . "</p>";
+echo "<p>Refresca la página para ver si la solicitud va a otra instancia.</p>";
+
+// Opcional: Mostrar todas las variables del servidor para depuración
+echo "<h3>Detalles del servidor:</h3>";
+echo "<pre>";
+print_r($_SERVER);
+echo "</pre>";
+?>
